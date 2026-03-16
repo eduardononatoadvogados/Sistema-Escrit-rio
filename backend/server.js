@@ -33,3 +33,9 @@ const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
+app.get("/__version", (req, res) => {
+  res.status(200).json({
+    commit: "7dc3893",
+    date: "2026-03-16",
+  });
+});
