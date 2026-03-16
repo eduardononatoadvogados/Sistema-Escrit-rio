@@ -1,41 +1,16 @@
-﻿const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-require("dotenv").config();
+﻿const express = require('express');
+const router = express.Router();
 
-const app = express();
+const { gerarPDF } = require('../controllers/documentoController');
 
-// Middlewares
-app.use(cors());
-app.use(express.json());
-
-// ConexÃ£o com MongoDB
-mongoose
-  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/escritorio")
-  .then(() => console.log("MongoDB conectado"))
-  .catch((err) => console.error("Erro MongoDB:", err));
-
-// Rotas
-app.use("/api/clientes", require("./routes/clientes"));
-app.use("/api/processos", require("./routes/processos"));
-app.use("/api/documentos", require("./routes/documentos"));
-app.use("/api/whatsapp", require("./routes/whatsapp"));
-
-// Health check
-app.get("/", (req, res) => {
-  res.send("Servidor do sistema jurÃ­dico funcionando");
+router.get('/', (req, res) => {
+  res.json({ mensagem: "Rota de documentos funcionando" });
 });
 
-// Porta do servidor (mudamos para 5001 para evitar conflito com 5000)
-const PORT = process.env.PORT || 5001;
+router.post('/gerar', (req, res) => {
+  res.json({ mensagem: "Documento gerado com sucesso" });
+});
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor rodando na porta ${PORT}`);
-});
-app.get("/__version", (req, res) => {
-  res.status(200).json({
-    commit: "7dc3893",
-    date: "2026-03-16",
-  });
-});
+router.post('/pdf', gerarPDF);
+
+module.exports = router;
