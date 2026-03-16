@@ -1,22 +1,35 @@
-﻿Você é um engenheiro Node.js/Express. Eu vou colar o conteúdo inteiro do meu arquivo `backend/server.js`. 
-Quero que você me devolva DE VOLTA o arquivo `backend/server.js` COMPLETO (do início ao fim), pronto para eu substituir por inteiro no VSCode, mantendo todas as rotas e middlewares existentes, mas aplicando estas mudanças obrigatórias:
+﻿const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+require("dotenv").config();
 
-1) A rota GET "/" deve responder exatamente com status 200 e o texto "OK" (sem acentos), assim:
-   app.get("/", (req, res) => { res.status(200).send("OK"); });
+const app = express();
 
-2) Deve existir uma rota GET "/__version" que responda JSON com pelo menos:
-   { "commit": "<algum_valor>", "date": "2026-03-16" }
-   (pode manter o commit como string fixa, mas a rota deve existir e funcionar)
+// Middlewares
+app.use(cors());
+app.use(express.json());
 
-3) Garanta que NÃO existam duas definições de app.get("/") no arquivo (apenas uma). 
-   Se existirem múltiplas hoje, remova as duplicadas e mantenha somente a versão que retorna "OK".
+// ConexÃ£o com MongoDB
+mongoose
+  .connect(process.env.MONGO_URI || "mongodb://localhost:27017/escritorio")
+  .then(() => console.log("MongoDB conectado"))
+  .catch((err) => console.error("Erro MongoDB:", err));
 
-4) Não altere o comportamento das outras rotas (API), apenas ajuste o mínimo necessário para cumprir os itens acima.
+// Rotas
+app.use("/api/clientes", require("./routes/clientes"));
+app.use("/api/processos", require("./routes/processos"));
+app.use("/api/documentos", require("./routes/documentos"));
+app.use("/api/whatsapp", require("./routes/whatsapp"));
 
-5) Garanta que o arquivo final termine com newline (uma linha em branco no final) para não aparecer "\ No newline at end of file".
+// Health check
+app.get("/", (req, res) => {
+  res.send("Servidor do sistema jurÃ­dico funcionando");
+});
 
-Depois que eu colar meu `backend/server.js`, responda com um único bloco de código contendo o arquivo completo atualizado.
+// Porta do servidor (mudamos para 5001 para evitar conflito com 5000)
+const PORT = process.env.PORT || 5001;
 
-Agora aqui está o meu `backend/server.js` atual:
-(cole aqui o conteúdo completo do arquivo)
-
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
